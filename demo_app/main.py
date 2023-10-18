@@ -20,7 +20,7 @@ from random import randint
 
 traces_demo = False
 metrics_demo = True
-Console_output = True
+Console_output = False
 
 # Service name is required for most backends,
 # and although it's not necessary for console export,
@@ -33,7 +33,7 @@ if traces_demo:
     if Console_output:
         processor = BatchSpanProcessor(ConsoleSpanExporter())#sacar a consola
     else:
-        processor = BatchSpanProcessor(OTLPMetricExporter(endpoint="localhost:4317"),)#sacar a consola
+        processor = BatchSpanProcessor(OTLPMetricExporter(endpoint="localhost:4317", insecure=True),)#sacar a consola
     tracer_provider.add_span_processor(processor)
 
     # Sets the global default tracer provider
@@ -47,7 +47,7 @@ if metrics_demo:
     if Console_output:
         metric_reader = PeriodicExportingMetricReader(ConsoleMetricExporter(),export_interval_millis=1000) #sacar métrica a consola
     else:
-        metric_reader = PeriodicExportingMetricReader(OTLPMetricExporter(endpoint="localhost:4317"),export_interval_millis=50) #sacar métrica a OTLP
+        metric_reader = PeriodicExportingMetricReader(OTLPMetricExporter(endpoint="localhost:4317", insecure=True),export_interval_millis=50) #sacar métrica a OTLP
     # Sets the global default meter provider
     metric_provider = MeterProvider(resource=resource,metric_readers=[metric_reader])
     metrics.set_meter_provider(metric_provider)
@@ -62,6 +62,7 @@ if metrics_demo:
         yield Observation(random.randrange(start=1,step=1,stop=10))
 
     work_meter = meter.create_observable_gauge("example1.inferencetime",callbacks=[get_inference_time_callback],unit="m/s",description="tiempo de inferencia de example1")
+
 
 if traces_demo:
     @tracer.start_as_current_span("example_trace_1_do_work")

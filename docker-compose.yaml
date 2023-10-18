@@ -6,13 +6,10 @@ services:
   
   otel-collector:
     container_name: otel-collector
-    image: otel/opentelemetry-collector
-    command: ["--config=/etc/otel-collector-config.yaml"]
+    image: otel/opentelemetry-collector-contrib
     # user: root # required for reading docker container logs
     volumes:
-      - ./otel-collector-config.yaml:/etc/otel-collector-config.yaml
-    environment:
-      - OTEL_RESOURCE_ATTRIBUTES=host.name=otel-host,os.type=linux
+      - ./otel-collector-config.yaml:/etc/otel/config.yaml
     ports:
       # - "1777:1777"     # pprof extension
       - "4317:4317"     # OTLP gRPC receiver
