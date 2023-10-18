@@ -1,0 +1,25 @@
+receivers:
+  otlp:
+    protocols:
+      grpc:
+
+processors:
+  batch:
+
+exporters:
+  prometheusremotewrite:
+    endpoint: 'localhost:9090'
+    tls:
+      insecure: true
+
+
+service:
+  pipelines:
+    #traces:
+      #receivers: [otlp]
+      #exporters: [prometheusremotewrite]
+      #processors: [batch]
+    metrics:
+      receivers: [otlp]
+      processors: [batch]
+      exporters: [prometheusremotewrite]
