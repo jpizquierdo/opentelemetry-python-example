@@ -19,8 +19,8 @@ import random
 from time import sleep
 from random import randint
 
-traces_demo = True
-metrics_demo = False
+traces_demo = False
+metrics_demo = True
 Console_output = False
 
 # Service name is required for most backends,
