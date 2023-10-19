@@ -9,9 +9,9 @@ receivers:
 processors:
   batch:
 
-# connectors:
-#   spanmetrics:
-#     namespace: span.metrics
+connectors:
+  spanmetrics:
+    namespace: span.metrics
 
 exporters:
   prometheus:
@@ -29,10 +29,10 @@ exporters:
 service:
   extensions: [health_check]
   pipelines:
-    # traces:
-    #   receivers: [otlp]
-    #   exporters: [spanmetrics]
+    traces:
+      receivers: [otlp]
+      exporters: [spanmetrics]
     metrics:
-      receivers: [otlp] #,spanmetrics]
+      receivers: [otlp, spanmetrics]
       #processors: [batch]
       exporters: [prometheus]

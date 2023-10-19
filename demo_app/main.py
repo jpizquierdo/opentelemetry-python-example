@@ -19,8 +19,6 @@ import random
 from time import sleep
 from random import randint
 
-traces_demo = False
-metrics_demo = True
 Console_output = False
 
 # Service name is required for most backends,
@@ -29,61 +27,51 @@ Console_output = False
 resource = Resource(attributes={
     SERVICE_NAME: "DEMO-01-OTLP"
 })
-if traces_demo:
-    tracer_provider = TracerProvider(resource=resource)
-    if Console_output:
-        processor = BatchSpanProcessor(ConsoleSpanExporter())#sacar a consola
-    else:
-        processor = BatchSpanProcessor(OTLPSpanExporter(endpoint="localhost:4317", insecure=True),)#sacar a consola
-    tracer_provider.add_span_processor(processor)
 
-    # Sets the global default tracer provider
-    trace.set_tracer_provider(tracer_provider)
+tracer_provider = TracerProvider(resource=resource)
+if Console_output:
+    processor = BatchSpanProcessor(ConsoleSpanExporter())#sacar a consola
+else:
+    processor = BatchSpanProcessor(OTLPSpanExporter(endpoint="localhost:4317", insecure=True),)#sacar a consola
+tracer_provider.add_span_processor(processor)
 
-    # Creates a tracer from the global tracer provider
-    tracer = trace.get_tracer("example1.tracer.IA")
+# Sets the global default tracer provider
+trace.set_tracer_provider(tracer_provider)
 
-if metrics_demo:
-    #metric
-    if Console_output:
-        metric_reader = PeriodicExportingMetricReader(ConsoleMetricExporter(),export_interval_millis=1000) #sacar métrica a consola
-    else:
-        metric_reader = PeriodicExportingMetricReader(OTLPMetricExporter(endpoint="localhost:4317", insecure=True),export_interval_millis=50) #sacar métrica a OTLP
-    # Sets the global default meter provider
-    metric_provider = MeterProvider(resource=resource,metric_readers=[metric_reader])
-    metrics.set_meter_provider(metric_provider)
-
-    # Creates a meter from the global meter provider
-    meter = metrics.get_meter("example1.meter.IA")
-
-    work_counter = meter.create_counter(
-        "example1.counter1", unit="1", description="Counts the amount of inferences done"
-    )
-    def get_inference_time_callback(options: CallbackOptions):
-        yield Observation(random.randrange(start=1,step=1,stop=10))
-
-    work_meter = meter.create_observable_gauge("example1.inferencetime",callbacks=[get_inference_time_callback],unit="m/s",description="tiempo de inferencia de example1")
+# Creates a tracer from the global tracer provider
+tracer = trace.get_tracer("example1.tracer.IA")
 
 
-if traces_demo:
-    @tracer.start_as_current_span("do_work")
-    def do_work():
-        # count the work being doing
-        print("doing some work...")
-        sleep(randint(1,2))
-if metrics_demo:
-    def do_work(work_item):
-        # count the work being doing
-        work_item.add(1)
-        print("doing some work...")
-        sleep(randint(1,5))
+#metric
+if Console_output:
+    metric_reader = PeriodicExportingMetricReader(ConsoleMetricExporter(),export_interval_millis=1000) #sacar métrica a consola
+else:
+    metric_reader = PeriodicExportingMetricReader(OTLPMetricExporter(endpoint="localhost:4317", insecure=True),export_interval_millis=50) #sacar métrica a OTLP
+# Sets the global default meter provider
+metric_provider = MeterProvider(resource=resource,metric_readers=[metric_reader])
+metrics.set_meter_provider(metric_provider)
+
+# Creates a meter from the global meter provider
+meter = metrics.get_meter("example1.meter.IA")
+
+work_counter = meter.create_counter(
+    "example1.counter1", unit="1", description="Counts the amount of inferences done"
+)
+def get_inference_time_callback(options: CallbackOptions):
+    yield Observation(random.randrange(start=1,step=1,stop=10))
+
+work_meter = meter.create_observable_gauge("example1.inferencetime",callbacks=[get_inference_time_callback],unit="m/s",description="tiempo de inferencia de example1")
+
+@tracer.start_as_current_span("do_work")
+def do_work(work_item):
+    # count the work being doing
+    work_item.add(1)
+    print("doing some work...")
+    sleep(randint(1,5))
 
 
 
 if __name__ == "__main__":
     while True:
-        if traces_demo and not metrics_demo:
-            do_work()
-        if metrics_demo:
-            do_work(work_counter)
+        do_work(work_counter)
         sleep(0.1)
