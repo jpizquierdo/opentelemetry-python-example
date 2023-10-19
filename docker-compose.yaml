@@ -4,27 +4,29 @@ services:
   # app:
   #   build: .
   
-  otel-collector:
-    container_name: otel-collector
+  collector:
+    container_name: collector
     image: otel/opentelemetry-collector-contrib
     # user: root # required for reading docker container logs
+    command: ["--config=/conf/collector-config.yml"]
     volumes:
-      - ./otel-collector-config.yaml:/etc/otel/config.yaml
+      - "./otel-collector-config.yaml:/conf/collector-config.yml"
     ports:
       # - "1777:1777"     # pprof extension
       - "4317:4317"     # OTLP gRPC receiver
+      - "9464:9464"     # Prometheus exporter
       # - "4318:4318"     # OTLP HTTP receiver
       # - "8888:8888"     # OtelCollector internal metrics
       # - "8889:8889"     # signoz spanmetrics exposed by the agent
       # - "9411:9411"     # Zipkin port
-      # - "13133:13133"   # health check extension
+      - "13133:13133"   # health check extension
       # - "14250:14250"   # Jaeger gRPC
       # - "14268:14268"   # Jaeger thrift HTTP
       # - "55678:55678"   # OpenCensus receiver
       # - "55679:55679"   # zPages extension
-    restart: on-failure
 
   prometheus:
+    container_name: prometheus
     image: prom/prometheus
     ports:
       - "9090:9090"

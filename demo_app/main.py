@@ -1,5 +1,6 @@
 from opentelemetry.sdk.resources import SERVICE_NAME, Resource
 from opentelemetry.exporter.otlp.proto.grpc.metric_exporter import OTLPMetricExporter
+from opentelemetry.exporter.otlp.proto.grpc.trace_exporter import OTLPSpanExporter
 from opentelemetry import metrics
 from opentelemetry.sdk.metrics import MeterProvider
 from opentelemetry.sdk.metrics.export import (
@@ -18,8 +19,8 @@ import random
 from time import sleep
 from random import randint
 
-traces_demo = False
-metrics_demo = True
+traces_demo = True
+metrics_demo = False
 Console_output = False
 
 # Service name is required for most backends,
@@ -33,7 +34,7 @@ if traces_demo:
     if Console_output:
         processor = BatchSpanProcessor(ConsoleSpanExporter())#sacar a consola
     else:
-        processor = BatchSpanProcessor(OTLPMetricExporter(endpoint="localhost:4317", insecure=True),)#sacar a consola
+        processor = BatchSpanProcessor(OTLPSpanExporter(endpoint="localhost:4317", insecure=True),)#sacar a consola
     tracer_provider.add_span_processor(processor)
 
     # Sets the global default tracer provider
@@ -65,7 +66,12 @@ if metrics_demo:
 
 
 if traces_demo:
-    @tracer.start_as_current_span("example_trace_1_do_work")
+    @tracer.start_as_current_span("do_work")
+    def do_work():
+        # count the work being doing
+        print("doing some work...")
+        sleep(randint(1,2))
+if metrics_demo:
     def do_work(work_item):
         # count the work being doing
         work_item.add(1)
@@ -76,6 +82,8 @@ if traces_demo:
 
 if __name__ == "__main__":
     while True:
-        if traces_demo:
+        if traces_demo and not metrics_demo:
+            do_work()
+        if metrics_demo:
             do_work(work_counter)
         sleep(0.1)
