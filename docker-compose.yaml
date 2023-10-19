@@ -14,7 +14,6 @@ services:
     ports:
       # - "1777:1777"     # pprof extension
       - "4317:4317"     # OTLP gRPC receiver
-      - "9464:9464"     # Prometheus exporter
       # - "4318:4318"     # OTLP HTTP receiver
       # - "8888:8888"     # OtelCollector internal metrics
       # - "8889:8889"     # signoz spanmetrics exposed by the agent
@@ -34,6 +33,7 @@ services:
       - "./prometheus.yaml:/etc/prometheus/prometheus.yml"
 
   grafana:
+    container_name: grafana
     image: grafana/grafana
     ports:
       - "3000:3000"
