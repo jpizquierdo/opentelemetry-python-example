@@ -6,33 +6,78 @@ receivers:
     protocols:
       grpc:
 
-processors:
-  batch:
-
-connectors:
-  spanmetrics:
-    namespace: span.metrics
-
 exporters:
-  prometheus:
+  prometheus/a4rc:
     endpoint: ':9464'
     # namespace: test-space
     # const_labels:
     #   label1: value1
     metric_expiration: 600m
     send_timestamps: true
-    # add_metric_suffixes: false
+    # add_metric_suffixes: true
     # enable_open_metrics: true
     # resource_to_telemetry_conversion:
     #   enabled: true
+  prometheus/tardis:
+    endpoint: ':9465'
+    metric_expiration: 600m
+    send_timestamps: true
+  prometheus/berten:
+    endpoint: ':9466'
+    metric_expiration: 600m
+    send_timestamps: true
+  prometheus/gps2iena:
+    endpoint: ':9467'
+    metric_expiration: 600m
+    send_timestamps: true
+  prometheus/sa:
+    endpoint: ':9468'
+    metric_expiration: 600m
+    send_timestamps: true
+  prometheus/lidar:
+    endpoint: ':9469'
+    metric_expiration: 600m
+    send_timestamps: true
+
+connectors:
+  routing:
+    default_pipelines: [metrics/a4rc]
+    error_mode: ignore
+    table:
+      - statement: route() where attributes["service.name"] == "iena2otlp-a4rc"
+        pipelines: [metrics/a4rc]
+      - statement: route() where attributes["service.name"] == "iena2otlp-tardis"
+        pipelines: [metrics/tardis]
+      - statement: route() where attributes["service.name"] == "iena2otlp-berten"
+        pipelines: [metrics/berten]
+      - statement: route() where attributes["service.name"] == "iena2otlp-gps2iena"
+        pipelines: [metrics/gps2iena]
+      - statement: route() where attributes["service.name"] == "iena2otlp-sa"
+        pipelines: [metrics/sa]
+      - statement: route() where attributes["service.name"] == "iena2otlp-lidar"
+        pipelines: [metrics/lidar]
 
 service:
   extensions: [health_check]
   pipelines:
-    traces:
+    metrics/in:
       receivers: [otlp]
-      exporters: [spanmetrics]
-    metrics:
-      receivers: [otlp, spanmetrics]
-      #processors: [batch]
-      exporters: [prometheus]
+      exporters: [routing]
+    metrics/a4rc:
+      receivers: [routing]
+      exporters: [prometheus/a4rc]
+    metrics/tardis:
+      receivers: [routing]
+      exporters: [prometheus/tardis]
+    metrics/berten:
+      receivers: [routing]
+      exporters: [prometheus/berten]
+    metrics/gps2iena:
+      receivers: [routing]
+      exporters: [prometheus/gps2iena]
+    metrics/sa:
+      receivers: [routing]
+      exporters: [prometheus/sa]
+    metrics/lidar:
+      receivers: [routing]
+      exporters: [prometheus/lidar]

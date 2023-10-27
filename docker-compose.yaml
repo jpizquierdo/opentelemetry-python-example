@@ -1,8 +1,14 @@
 version: "3"
 
 services:
-  # app:
-  #   build: .
+  # iena2otlp-a4rc:
+  #   network_mode: host
+  #   ports:
+  #     - "21000:21000"
+  #   build:
+  #       context: .
+  #       dockerfile: Dockerfile_a4rc
+  #   restart: always
   
   collector:
     container_name: collector
@@ -43,8 +49,11 @@ services:
       - "GF_SECURITY_ADMIN_USER=admin"
       - "GF_SECURITY_ADMIN_PASSWORD=admin"
       - "GF_DASHBOARDS_MIN_REFRESH_INTERVAL=100ms"
+      - "GF_INSTALL_PLUGINS=novatec-sdg-panel, boazreicher-sierraplot-panel, marcusolsson-treemap-panel, ventura-psychrometric-panel, snuids-radar-panel, satellogic-3d-globe-panel, esnet-arcdiagram-panel, natel-discrete-panel"
     volumes:
       - "./grafana_datasources.yaml:/etc/grafana/provisioning/datasources/prometheus_docker-compose.yaml"
+      - grafana-storage:/var/lib/grafana
     restart: always
-
+volumes:
+  grafana-storage: {}
 

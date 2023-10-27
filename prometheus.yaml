@@ -4,9 +4,39 @@ global:
 scrape_configs:
   # The job name is added as a label `job=<job_name>` to any timeseries scraped from this config.
   - job_name: 'collector'
-    scrape_interval:     50ms
     static_configs:
-      - targets: ['collector:9464','collector:8888']
+      - targets: ['collector:8888']
+
+  - job_name: 'a4rc'
+    scrape_interval: 200ms
+    static_configs:
+      - targets: ['collector:9464']
+
+  - job_name: 'tardis'
+    scrape_interval: 50ms
+    static_configs:
+      - targets: ['collector:9465']
+
+  - job_name: 'berten'
+    scrape_interval: 22ms
+    static_configs:
+      - targets: ['collector:9466']
+
+  - job_name: 'gps2iena'
+    scrape_interval: 50ms
+    static_configs:
+      - targets: ['collector:9467']
+
+  - job_name: 'sa'
+    scrape_interval: 33ms
+    static_configs:
+      - targets: ['collector:9468']
+
+  - job_name: 'lidar'
+    scrape_interval: 50ms
+    static_configs:
+      - targets: ['collector:9469']
+
   - job_name: 'default'
     static_configs:
       - targets: ['localhost:9090']
