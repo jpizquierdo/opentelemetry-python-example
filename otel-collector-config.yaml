@@ -9,11 +9,20 @@ receivers:
 processors:
   batch:
 
-connectors:
-  spanmetrics:
-    namespace: span.metrics
-
 exporters:
+  carbon:
+    endpoint: 'graphite:2003'
+    # by default it will export to localhost:2003 using tcp
+  debug:
+    verbosity: detailed
+    sampling_initial: 5
+    sampling_thereafter: 200
+  #carbon:
+  #carbon exporter supports carbon's plaintext protocol
+  #default endpoint localhost:2003 and timeout: 5s
+    #endpoint: ':2003'
+    #timeout: 5s
+
   prometheus:
     endpoint: ':9464'
     # namespace: test-space
@@ -29,10 +38,7 @@ exporters:
 service:
   extensions: [health_check]
   pipelines:
-    traces:
-      receivers: [otlp]
-      exporters: [spanmetrics]
     metrics:
-      receivers: [otlp, spanmetrics]
+      receivers: [otlp]
       #processors: [batch]
-      exporters: [prometheus]
+      exporters: [prometheus,carbon]

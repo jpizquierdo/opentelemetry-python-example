@@ -24,6 +24,22 @@ services:
       # - "55678:55678"   # OpenCensus receiver
       # - "55679:55679"   # zPages extension
     restart: always
+  
+  graphite:
+    container_name: graphite
+    image: graphiteapp/graphite-statsd
+    ports:
+      #- "80:80" # nginx
+      #- "2003:2003" # carbon receiver - plaintext
+      #- "2004:2004" # carbon receiver - pickle
+      #- "2023:2023" # carbon aggregator - plaintext
+      #- "2024:2024" # carbon aggregator - pickle
+      - "9091:8080" # Graphite internal gunicorn port (without Nginx proxying)
+      #- "8125:8125/udp" # statsd
+      #- "8126:8126" # statsd admin
+    volumes:
+      - graphite-storage:/opt/graphite/storage
+    restart: always
 
   prometheus:
     container_name: prometheus
@@ -51,3 +67,4 @@ services:
 
 volumes:
   grafana-storage: {}
+  graphite-storage: {}
