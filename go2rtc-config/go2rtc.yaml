@@ -2,7 +2,7 @@
 # Example
 streams:
   tardis:
-    - ffmpeg:udp://225.6.100.90:21000
+    - exec:ffmpeg -re -i udp://225.6.100.90:21000 -f rtsp -rtsp_transport tcp rtsp://localhost:8554/live.stream
 log:
   level: info  # default level
   api: debug
