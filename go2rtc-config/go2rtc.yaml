@@ -1,0 +1,11 @@
+# https://github.com/AlexxIT/go2rtc#module-api for other configuration examples
+# Example
+streams:
+  tardis:
+    - ffmpeg:udp://225.6.100.90:21000
+log:
+  level: info  # default level
+  api: debug
+  rtsp: debug
+  streams: debug
+  webrtc: debug

@@ -55,6 +55,21 @@ services:
       - grafana-storage:/var/lib/grafana
       - "./grafana-images/:/usr/share/grafana/public/img/"
     restart: always
+
+  go2rtc:
+    image: alexxit/go2rtc
+    container_name: go2rtc
+    #network_mode: host       # important for WebRTC, HomeKit, UDP cameras
+    ports:
+      - "1984:1984"
+      - "21000:21000"
+    privileged: true         # only for FFmpeg hardware transcoding
+    restart: unless-stopped  # autorestart on fail or config change from WebUI
+    environment:
+      - TZ=Europe/Rome  # timezone in logs
+    volumes:
+      - ./go2rtc-config:/config   # folder for go2rtc.yaml file (edit from WebUI)
+
 volumes:
   grafana-storage: {}
 
