@@ -63,6 +63,7 @@ services:
     volumes:
       - "./grafana_datasources.yaml:/etc/grafana/provisioning/datasources/prometheus_docker-compose.yaml"
       - grafana-storage:/var/lib/grafana
+      - "./grafana-images/:/usr/share/grafana/public/img/"
     restart: always
 
 volumes:
