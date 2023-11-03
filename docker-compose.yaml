@@ -49,6 +49,7 @@ services:
       - "GF_SECURITY_ADMIN_USER=admin"
       - "GF_SECURITY_ADMIN_PASSWORD=admin"
       - "GF_DASHBOARDS_MIN_REFRESH_INTERVAL=100ms"
+      - "GF_PANELS_DISABLE_SANITIZE_HTML=true"
       #- "GF_INSTALL_PLUGINS=novatec-sdg-panel, boazreicher-sierraplot-panel, marcusolsson-treemap-panel, ventura-psychrometric-panel, snuids-radar-panel, satellogic-3d-globe-panel, esnet-arcdiagram-panel, natel-discrete-panel"
     volumes:
       - "./grafana_datasources.yaml:/etc/grafana/provisioning/datasources/prometheus_docker-compose.yaml"
@@ -59,12 +60,12 @@ services:
   go2rtc:
     image: alexxit/go2rtc
     container_name: go2rtc
-    #network_mode: host       # important for WebRTC, HomeKit, UDP cameras
-    ports:
-      - "1984:1984"
-      - "8554:8554"
-      - "8555:8555"
-      - "21000:21000"
+    network_mode: host       # important for WebRTC, HomeKit, UDP cameras
+    #ports:
+      #- "1984:1984"
+      #- "8554:8554"
+      #- "8555:8555"
+      #- "21000:21000"
     privileged: true         # only for FFmpeg hardware transcoding
     restart: unless-stopped  # autorestart on fail or config change from WebUI
     environment:

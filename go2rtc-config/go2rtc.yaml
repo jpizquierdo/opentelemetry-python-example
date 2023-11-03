@@ -2,7 +2,7 @@
 # Example
 streams:
   tardis:
-    - exec:ffmpeg -re -i udp://225.6.100.90:21000 -f rtsp -rtsp_transport tcp rtsp://localhost:8554/live.stream
+    - exec:ffmpeg -re -i udp://225.6.100.90:21000?localaddr=10.0.0.15 -tune zerolatency -vcodec copy -acodec copy -f rtsp {output}
 log:
   level: info  # default level
   api: debug
