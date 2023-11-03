@@ -1,8 +1,6 @@
 version: "3"
 
 services:
-  # app:
-  #   build: .
   
   collector:
     container_name: collector
@@ -60,11 +58,28 @@ services:
       - "GF_SECURITY_ADMIN_PASSWORD=admin"
       - "GF_DASHBOARDS_MIN_REFRESH_INTERVAL=100ms"
       - "GF_INSTALL_PLUGINS=novatec-sdg-panel, boazreicher-sierraplot-panel, marcusolsson-treemap-panel, ventura-psychrometric-panel, snuids-radar-panel, satellogic-3d-globe-panel, esnet-arcdiagram-panel, natel-discrete-panel"
+      - "GF_PANELS_DISABLE_SANITIZE_HTML=true"
     volumes:
       - "./grafana_datasources.yaml:/etc/grafana/provisioning/datasources/prometheus_docker-compose.yaml"
       - grafana-storage:/var/lib/grafana
       - "./grafana-images/:/usr/share/grafana/public/img/"
     restart: always
+
+  go2rtc:
+    image: alexxit/go2rtc
+    container_name: go2rtc
+    network_mode: host       # important for WebRTC, HomeKit, UDP cameras
+    #ports:
+      #- "1984:1984"
+      #- "8554:8554"
+      #- "8555:8555"
+      #- "21000:21000"
+    privileged: true         # only for FFmpeg hardware transcoding
+    restart: unless-stopped  # autorestart on fail or config change from WebUI
+    environment:
+      - TZ=Europe/Rome  # timezone in logs
+    volumes:
+      - ./go2rtc-config:/config   # folder for go2rtc.yaml file (edit from WebUI)
 
 volumes:
   grafana-storage: {}

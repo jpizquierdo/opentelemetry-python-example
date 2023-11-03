@@ -30,7 +30,7 @@ exporters:
     #   label1: value1
     metric_expiration: 600m
     send_timestamps: true
-    # add_metric_suffixes: false
+    # add_metric_suffixes: true
     # enable_open_metrics: true
     # resource_to_telemetry_conversion:
     #   enabled: true

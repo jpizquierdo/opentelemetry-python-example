@@ -1,0 +1,11 @@
+# https://github.com/AlexxIT/go2rtc#module-api for other configuration examples
+# Example
+streams:
+  mycamera:
+    - exec:ffmpeg -re -i udp://225.6.100.90:21000?localaddr=10.0.0.15 -tune zerolatency -vcodec copy -acodec copy -f rtsp {output}
+log:
+  level: info  # default level
+  api: debug
+  rtsp: debug
+  streams: debug
+  webrtc: debug
