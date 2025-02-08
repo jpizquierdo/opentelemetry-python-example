@@ -3,10 +3,10 @@ global:
 
 scrape_configs:
   # The job name is added as a label `job=<job_name>` to any timeseries scraped from this config.
-  - job_name: 'collector'
-    scrape_interval:     50ms
+  - job_name: 'app'
+    scrape_interval: 40ms
     static_configs:
-      - targets: ['collector:9464','collector:8888']
+      - targets: ["host.docker.internal:8000"]
   - job_name: 'default'
     static_configs:
       - targets: ['localhost:9090']
