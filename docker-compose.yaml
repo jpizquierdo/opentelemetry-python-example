@@ -1,42 +1,26 @@
 version: "3"
 
 services:
-  
+
   collector:
     container_name: collector
     image: otel/opentelemetry-collector-contrib
     # user: root # required for reading docker container logs
-    command: ["--config=/conf/collector-config.yml"]
+    command: [ "--config=/conf/collector-config.yml" ]
     volumes:
       - "./otel-collector-config.yaml:/conf/collector-config.yml"
     ports:
       # - "1777:1777"     # pprof extension
-      - "4317:4317"     # OTLP gRPC receiver
+      - "4317:4317" # OTLP gRPC receiver
       # - "4318:4318"     # OTLP HTTP receiver
       # - "8888:8888"     # OtelCollector internal metrics
       # - "8889:8889"     # signoz spanmetrics exposed by the agent
       # - "9411:9411"     # Zipkin port
-      - "13133:13133"   # health check extension
+      - "13133:13133" # health check extension
       # - "14250:14250"   # Jaeger gRPC
       # - "14268:14268"   # Jaeger thrift HTTP
       # - "55678:55678"   # OpenCensus receiver
       # - "55679:55679"   # zPages extension
-    restart: always
-  
-  graphite:
-    container_name: graphite
-    image: graphiteapp/graphite-statsd
-    ports:
-      #- "80:80" # nginx
-      #- "2003:2003" # carbon receiver - plaintext
-      #- "2004:2004" # carbon receiver - pickle
-      #- "2023:2023" # carbon aggregator - plaintext
-      #- "2024:2024" # carbon aggregator - pickle
-      - "9091:8080" # Graphite internal gunicorn port (without Nginx proxying)
-      #- "8125:8125/udp" # statsd
-      #- "8126:8126" # statsd admin
-    volumes:
-      - graphite-storage:/opt/graphite/storage
     restart: always
 
   prometheus:
@@ -57,7 +41,6 @@ services:
       - "GF_SECURITY_ADMIN_USER=admin"
       - "GF_SECURITY_ADMIN_PASSWORD=admin"
       - "GF_DASHBOARDS_MIN_REFRESH_INTERVAL=100ms"
-      - "GF_INSTALL_PLUGINS=novatec-sdg-panel, boazreicher-sierraplot-panel, marcusolsson-treemap-panel, ventura-psychrometric-panel, snuids-radar-panel, satellogic-3d-globe-panel, esnet-arcdiagram-panel, natel-discrete-panel"
       - "GF_PANELS_DISABLE_SANITIZE_HTML=true"
     volumes:
       - "./grafana_datasources.yaml:/etc/grafana/provisioning/datasources/prometheus_docker-compose.yaml"
@@ -68,18 +51,18 @@ services:
   go2rtc:
     image: alexxit/go2rtc
     container_name: go2rtc
-    network_mode: host       # important for WebRTC, HomeKit, UDP cameras
+    network_mode: host # important for WebRTC, HomeKit, UDP cameras
     #ports:
-      #- "1984:1984"
-      #- "8554:8554"
-      #- "8555:8555"
-      #- "21000:21000"
-    privileged: true         # only for FFmpeg hardware transcoding
-    restart: unless-stopped  # autorestart on fail or config change from WebUI
+    #- "1984:1984"
+    #- "8554:8554"
+    #- "8555:8555"
+    #- "21000:21000"
+    privileged: true # only for FFmpeg hardware transcoding
+    restart: unless-stopped # autorestart on fail or config change from WebUI
     environment:
-      - TZ=Europe/Rome  # timezone in logs
+      - TZ=Europe/Rome # timezone in logs
     volumes:
-      - ./go2rtc-config:/config   # folder for go2rtc.yaml file (edit from WebUI)
+      - ./go2rtc-config:/config # folder for go2rtc.yaml file (edit from WebUI)
 
 volumes:
   grafana-storage: {}
